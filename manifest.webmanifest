@@ -1,0 +1,11 @@
+{
+  "name": "Ergonomic Zone Survey",
+  "short_name": "Ergo Survey",
+  "description": "Fast offline field capture for LMS ergonomic zone constants.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eef1f5",
+  "theme_color": "#111827",
+  "orientation": "portrait-primary"
+}

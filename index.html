@@ -49,7 +49,7 @@ input,select{width:100%;min-height:48px;border:1px solid #cfd6df;border-radius:1
     <div id="defaults" class="defaults" style="margin-top:12px"></div>
   </div>
   <button id="start" class="primary big">Begin Section</button>
-  <div class="actions"><button id="exportSetup" class="secondary">Export CSV</button><button id="clearAll" class="plain danger">Clear Saved Data</button></div>
+  <div class="actions"><button id="exportSetup" class="secondary">Export CSV</button><button id="clearAll" class="plain danger">New File / Clear Survey</button></div>
 </section>
 
 <section id="survey" class="hidden">
@@ -124,7 +124,7 @@ q('aisle').oninput=function(){var p=this.selectionStart;this.value=this.value.to
 q('aisle').onchange=function(){state.config.aisle=this.value.trim().toUpperCase();save()};q('row').onchange=function(){state.config.row=norm(this.value);this.value=state.config.row;save()};
 q('clearDefaults').onclick=function(){state.config.defaults[state.config.area]=empty();save();renderSetup()};q('start').onclick=showSurvey;q('backSetup').onclick=showSetup;q('erase').onclick=erase;
 q('reset').onclick=function(){draft=defaultsDraft();active=best();renderSurvey()};q('confirm').onclick=saveNext;q('prev').onclick=previous;q('export').onclick=exportCsv;q('exportSetup').onclick=exportCsv;
-q('clearAll').onclick=function(){if(!state.records.length){toast('Nothing to clear');return}if(confirm('Delete all '+state.records.length+' saved rows?')){state.records=[];save();renderSetup();toast('Saved data cleared')}};
+q('clearAll').onclick=function(){if(!state.records.length&&!state.config.aisle){toast('Already clean');return}if(confirm('Start a new file? This deletes all saved rows and resets aisle/row. Defaults are kept.')){state.records=[];state.config.aisle='';state.config.row=1;save();renderSetup();toast('New file ready')}};
 for(var i=1;i<=9;i++){(function(n){var b=document.createElement('button');b.textContent=String(n);b.onclick=function(){enter(String(n))};q('pad').appendChild(b)})(i)}
 renderSetup();if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})});
 })();

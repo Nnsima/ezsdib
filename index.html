@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ergo Survey">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>Ergonomic Zone Survey</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#111827;background:#eef1f5;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#eef1f5}body{min-height:100dvh}button,input,select{font:inherit}button{touch-action:manipulation}
+.app{width:min(100%,540px);margin:auto;min-height:100dvh;padding:calc(18px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}
+.hidden{display:none!important}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}h1,h2,p{margin:0}h1{font-size:30px;line-height:1.05;letter-spacing:-.03em}.eyebrow{font-size:12px;font-weight:800;letter-spacing:.12em;color:#667085;margin-bottom:5px}
+.card{background:#fff;border:1px solid #dce1e8;border-radius:18px;padding:16px;margin:14px 0;box-shadow:0 4px 16px rgba(17,24,39,.05)}
+.badge{background:#111827;color:#fff;border-radius:999px;padding:8px 11px;font-size:13px;font-weight:800}.label{display:block;font-size:13px;font-weight:800;color:#475467;margin-bottom:8px}
+.segment{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}.segment button{min-height:48px;border:1px solid #cfd6df;background:#f7f8fa;border-radius:12px;font-weight:800}.segment button.on{background:#111827;color:#fff;border-color:#111827}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}label span{display:block;color:#475467;font-size:13px;font-weight:700;margin-bottom:6px}
+input,select{width:100%;min-height:48px;border:1px solid #cfd6df;border-radius:12px;background:#fff;color:#111827;padding:0 12px;font-size:18px;font-weight:700}
+.defaults{display:grid;grid-template-columns:1fr 1fr;gap:10px}.muted{font-size:13px;color:#667085;margin-top:4px}
+.primary,.secondary,.plain{border-radius:14px;font-weight:800}.primary{border:0;background:#111827;color:#fff}.secondary{background:#fff;color:#344054;border:1px solid #cfd6df}.plain{border:0;background:transparent;color:#344054}.danger{color:#b42318}
+.big{width:100%;min-height:58px;font-size:18px}.actions{display:grid;gap:10px;margin-top:12px}.actions .secondary{min-height:48px}
+.header{position:sticky;top:0;z-index:5;margin:calc(-18px - env(safe-area-inset-top)) -16px 14px;padding:calc(18px + env(safe-area-inset-top)) 16px 14px;background:rgba(238,241,245,.96);backdrop-filter:blur(14px);border-bottom:1px solid #dce1e8}.header .secondary{min-height:42px;padding:0 13px}
+.fields{display:grid;gap:8px;margin-bottom:10px}.fields.bulk{grid-template-columns:repeat(4,1fr)}.fields.rsp{grid-template-columns:repeat(2,1fr)}
+.field{border:2px solid #d6dce4;background:#fff;border-radius:15px;padding:10px 4px;text-align:center;min-width:0}.field.on{border-color:#111827;box-shadow:0 0 0 3px rgba(17,24,39,.08)}.field small{display:block;font-size:10px;font-weight:800;color:#667085;text-transform:uppercase}.field strong{display:block;font-size:29px;margin-top:3px}.field.empty strong{color:#b3bbc6}
+.code{display:flex;justify-content:space-between;padding:0 4px 9px;color:#667085;font-size:13px;font-weight:800}.code strong{color:#111827;letter-spacing:.16em;font-size:18px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.pad button{min-height:68px;border:1px solid #c8d0db;background:#fff;border-radius:16px;font-size:28px;font-weight:900}.pad button:active{transform:scale(.97);background:#e8ebef}
+.utils{display:flex;gap:9px;margin-top:10px}.utils button{flex:1;min-height:48px}.confirm{width:100%;min-height:62px;font-size:19px;margin-top:10px}.confirm:disabled{opacity:.38}
+.nav{display:flex;justify-content:space-between;margin-top:6px}.recent{margin-top:14px;padding-top:13px;border-top:1px solid #d4dae2}.recentlist{display:grid;gap:7px;margin-top:8px}.recentitem{width:100%;border:1px solid #d6dce4;border-radius:12px;background:#fff;min-height:48px;padding:8px 11px;display:flex;align-items:center;justify-content:space-between;text-align:left}.recentitem span{font-weight:800;letter-spacing:.08em;color:#667085}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#111827;color:#fff;padding:11px 14px;border-radius:999px;font-size:14px;font-weight:800;white-space:nowrap;max-width:calc(100vw - 32px)}
+</style>
+</head>
+<body>
+<main class="app">
+<section id="setup">
+  <div class="row"><div><p class="eyebrow">FIELD CAPTURE</p><h1>Ergonomic Zone Survey</h1></div><div id="setupCount" class="badge">0 saved</div></div>
+  <div class="card">
+    <span class="label">Area</span>
+    <div class="segment"><button class="area" data-area="Bulk">Bulk</button><button class="area" data-area="RSP">RSP</button></div>
+    <div class="grid2">
+      <label><span>Aisle</span><input id="aisle" placeholder="F09" maxlength="12" autocomplete="off" autocapitalize="characters"></label>
+      <label><span>Starting Row</span><input id="row" type="number" inputmode="numeric" min="1" max="999" value="1"></label>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row"><div><span class="label" style="margin:0">Defaults</span><p class="muted">Optional. New rows start prefilled.</p></div><button id="clearDefaults" class="plain">Clear</button></div>
+    <div id="defaults" class="defaults" style="margin-top:12px"></div>
+  </div>
+  <button id="start" class="primary big">Start Survey</button>
+  <div class="actions"><button id="exportSetup" class="secondary">Export CSV</button><button id="clearAll" class="plain danger">Clear Saved Data</button></div>
+</section>
+
+<section id="survey" class="hidden">
+  <div class="header row"><div><p id="areaLabel" class="eyebrow">BULK</p><h1 id="loc">F09 · ROW 01</h1></div><button id="backSetup" class="secondary">Setup</button></div>
+  <div id="fields" class="fields"></div>
+  <div class="code"><span>Code</span><strong id="code">----</strong></div>
+  <div id="pad" class="pad"></div>
+  <div class="utils"><button id="erase" class="secondary">⌫ Backspace</button><button id="reset" class="secondary">Reset Defaults</button></div>
+  <button id="confirm" class="primary confirm">✓ Confirm &amp; Next Row</button>
+  <div class="nav"><button id="prev" class="plain">← Previous Row</button><button id="export" class="plain">Export CSV</button></div>
+  <div class="recent"><div class="row"><h2>Recent</h2><span id="count" class="muted">0 saved</span></div><div id="recentList" class="recentlist"></div></div>
+</section>
+</main>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+(function(){
+'use strict';
+var KEY='ezsdib_v1', SETS={Bulk:['Bend','Reach','Step','Ladder'],RSP:['Bend','Reach']};
+function empty(){return{Bend:'',Reach:'',Step:'',Ladder:''}}
+function fresh(){return{config:{area:'Bulk',aisle:'',row:1,defaults:{Bulk:empty(),RSP:empty()}},records:[]}}
+function load(){try{var x=JSON.parse(localStorage.getItem(KEY));if(!x||!x.config||!Array.isArray(x.records))return fresh();x.config.area=x.config.area==='RSP'?'RSP':'Bulk';x.config.aisle=String(x.config.aisle||'').toUpperCase();x.config.row=norm(x.config.row);x.config.defaults=x.config.defaults||{};x.config.defaults.Bulk=Object.assign(empty(),x.config.defaults.Bulk||{});x.config.defaults.RSP=Object.assign(empty(),x.config.defaults.RSP||{});return x}catch(e){return fresh()}}
+var state=load(),draft=empty(),active=0,timer;
+function q(id){return document.getElementById(id)}function norm(v){var n=parseInt(v,10);return isFinite(n)&&n>0?n:1}function digit(v){return /^[1-9]$/.test(String(v))}
+function fields(){return SETS[state.config.area]}function key(a,i,r){return a+'|'+String(i).toUpperCase()+'|'+norm(r)}function rowText(r){return String(norm(r)).padStart(2,'0')}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));counts()}
+function defaultsDraft(){var d=empty(),src=state.config.defaults[state.config.area]||empty();fields().forEach(function(f){d[f]=digit(src[f])?src[f]:''});return d}
+function current(){var k=key(state.config.area,state.config.aisle,state.config.row);return state.records.find(function(r){return key(r.area,r.aisle,r.row)===k})||null}
+function best(){var fs=fields(),i=fs.findIndex(function(f){return !digit(draft[f])});return i<0?0:i}
+function loadDraft(){var r=current();draft=r?Object.assign(empty(),r.values):defaultsDraft();active=best();renderSurvey()}
+function counts(){var s=state.records.length+' saved';q('count').textContent=s;q('setupCount').textContent=s}
+function renderSetup(){
+ document.querySelectorAll('.area').forEach(function(b){b.classList.toggle('on',b.dataset.area===state.config.area)});
+ q('aisle').value=state.config.aisle;q('row').value=state.config.row;q('defaults').innerHTML='';
+ fields().forEach(function(f){var lab=document.createElement('label'),sp=document.createElement('span'),sel=document.createElement('select');sp.textContent=f;sel.dataset.field=f;
+  var o=document.createElement('option');o.value='';o.textContent='No default';sel.appendChild(o);
+  for(var i=1;i<=9;i++){o=document.createElement('option');o.value=String(i);o.textContent=String(i);sel.appendChild(o)}
+  sel.value=state.config.defaults[state.config.area][f]||'';sel.onchange=function(){state.config.defaults[state.config.area][f]=sel.value;save()};lab.appendChild(sp);lab.appendChild(sel);q('defaults').appendChild(lab)
+ });counts()
+}
+function renderSurvey(){
+ q('areaLabel').textContent=state.config.area.toUpperCase();q('loc').textContent=state.config.aisle+' · ROW '+rowText(state.config.row);
+ var fs=fields();q('fields').className='fields '+state.config.area.toLowerCase();q('fields').innerHTML='';
+ fs.forEach(function(f,i){var b=document.createElement('button');b.className='field'+(i===active?' on':'')+(digit(draft[f])?'':' empty');b.innerHTML='<small>'+f+'</small><strong>'+(draft[f]||'–')+'</strong>';b.onclick=function(){active=i;renderSurvey()};q('fields').appendChild(b)});
+ q('code').textContent=fs.map(function(f){return draft[f]||'–'}).join('');q('confirm').disabled=!fs.every(function(f){return digit(draft[f])});recent();counts()
+}
+function enter(v){var fs=fields();draft[fs[active]]=v;if(active<fs.length-1)active++;renderSurvey()}
+function erase(){var fs=fields(),f=fs[active];if(draft[f])draft[f]='';else if(active>0){active--;draft[fs[active]]=''}renderSurvey()}
+function saveNext(){var fs=fields();if(!fs.every(function(f){return digit(draft[f])}))return;var vals=empty();fs.forEach(function(f){vals[f]=draft[f]});
+ var rec={area:state.config.area,aisle:state.config.aisle,row:norm(state.config.row),values:vals,updatedAt:new Date().toISOString()},k=key(rec.area,rec.aisle,rec.row),idx=state.records.findIndex(function(r){return key(r.area,r.aisle,r.row)===k});
+ if(idx>=0)state.records[idx]=rec;else state.records.push(rec);state.config.row=norm(state.config.row)+1;save();draft=defaultsDraft();active=best();renderSurvey();toast(idx>=0?'Row updated':'Saved')
+}
+function previous(){if(norm(state.config.row)<=1)return;state.config.row=norm(state.config.row)-1;save();loadDraft()}
+function recent(){var list=q('recentList');list.innerHTML='';var a=state.records.slice().sort(function(x,y){return String(y.updatedAt).localeCompare(String(x.updatedAt))}).slice(0,5);
+ if(!a.length){var d=document.createElement('div');d.className='muted';d.textContent='No rows saved yet.';list.appendChild(d);return}
+ a.forEach(function(r){var fs=SETS[r.area]||SETS.Bulk,code=fs.map(function(f){return r.values&&r.values[f]||''}).join(''),b=document.createElement('button');b.className='recentitem';b.innerHTML='<strong>'+esc(r.area)+' · '+esc(r.aisle)+' · Row '+rowText(r.row)+'</strong><span>'+esc(code)+'</span>';b.onclick=function(){state.config.area=r.area;state.config.aisle=r.aisle;state.config.row=norm(r.row);save();loadDraft();window.scrollTo(0,0)};list.appendChild(b)})
+}
+function showSurvey(){var a=q('aisle').value.trim().toUpperCase();if(!a){q('aisle').focus();toast('Enter an aisle');return}state.config.aisle=a;state.config.row=norm(q('row').value);save();q('setup').classList.add('hidden');q('survey').classList.remove('hidden');loadDraft();window.scrollTo(0,0)}
+function showSetup(){q('survey').classList.add('hidden');q('setup').classList.remove('hidden');renderSetup();window.scrollTo(0,0)}
+function csvEsc(v){var s=String(v==null?'':v);return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+function buildCsv(){var h=['Area','Aisle','Row #','Bend Tier','Reach Tier','Step Tier','Ladder Tier'],a=state.records.slice().sort(function(x,y){var z=x.area.localeCompare(y.area);if(z)return z;z=x.aisle.localeCompare(y.aisle,undefined,{numeric:true,sensitivity:'base'});return z||norm(x.row)-norm(y.row)});
+ var rows=a.map(function(r){return[r.area,r.aisle,norm(r.row),r.values.Bend||'',r.values.Reach||'',r.area==='Bulk'?(r.values.Step||''):'',r.area==='Bulk'?(r.values.Ladder||''):'' ]});return[h].concat(rows).map(function(r){return r.map(csvEsc).join(',')}).join('\r\n')
+}
+async function exportCsv(){if(!state.records.length){toast('No saved rows to export');return}var csv=buildCsv(),date=new Date().toISOString().slice(0,10),name='ergonomic_zone_survey_'+date+'.csv',file=new File([csv],name,{type:'text/csv;charset=utf-8'});
+ try{if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){await navigator.share({files:[file],title:'Ergonomic Zone Survey CSV'});return}}catch(e){if(e&&e.name==='AbortError')return}
+ var u=URL.createObjectURL(file),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},1500);toast('CSV exported')
+}
+function toast(s){q('toast').textContent=s;q('toast').classList.remove('hidden');clearTimeout(timer);timer=setTimeout(function(){q('toast').classList.add('hidden')},1400)}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+document.querySelectorAll('.area').forEach(function(b){b.onclick=function(){state.config.area=b.dataset.area==='RSP'?'RSP':'Bulk';save();renderSetup()}});
+q('aisle').oninput=function(){var p=this.selectionStart;this.value=this.value.toUpperCase();try{this.setSelectionRange(p,p)}catch(e){}};
+q('aisle').onchange=function(){state.config.aisle=this.value.trim().toUpperCase();save()};q('row').onchange=function(){state.config.row=norm(this.value);this.value=state.config.row;save()};
+q('clearDefaults').onclick=function(){state.config.defaults[state.config.area]=empty();save();renderSetup()};q('start').onclick=showSurvey;q('backSetup').onclick=showSetup;q('erase').onclick=erase;
+q('reset').onclick=function(){draft=defaultsDraft();active=best();renderSurvey()};q('confirm').onclick=saveNext;q('prev').onclick=previous;q('export').onclick=exportCsv;q('exportSetup').onclick=exportCsv;
+q('clearAll').onclick=function(){if(!state.records.length){toast('Nothing to clear');return}if(confirm('Delete all '+state.records.length+' saved rows?')){state.records=[];save();renderSetup();toast('Saved data cleared')}};
+for(var i=1;i<=9;i++){(function(n){var b=document.createElement('button');b.textContent=String(n);b.onclick=function(){enter(String(n))};q('pad').appendChild(b)})(i)}
+renderSetup();if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})});
+})();
+</script>
+</body></html>

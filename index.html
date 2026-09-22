@@ -24,7 +24,7 @@ input,select{width:100%;min-height:48px;border:1px solid #cfd6df;border-radius:1
 .big{width:100%;min-height:58px;font-size:18px}.actions{display:grid;gap:10px;margin-top:12px}.actions .secondary{min-height:48px}
 .header{position:sticky;top:0;z-index:5;margin:calc(-18px - env(safe-area-inset-top)) -16px 14px;padding:calc(18px + env(safe-area-inset-top)) 16px 14px;background:rgba(238,241,245,.96);backdrop-filter:blur(14px);border-bottom:1px solid #dce1e8}.header .secondary{min-height:42px;padding:0 13px}
 .fields{display:grid;gap:8px;margin-bottom:10px}.fields.bulk{grid-template-columns:repeat(4,1fr)}.fields.rsp{grid-template-columns:repeat(2,1fr)}
-.field{border:2px solid #d6dce4;background:#fff;border-radius:15px;padding:10px 4px;text-align:center;min-width:0}.field.on{border-color:#111827;box-shadow:0 0 0 3px rgba(17,24,39,.08)}.field small{display:block;font-size:10px;font-weight:800;color:#667085;text-transform:uppercase}.field strong{display:block;font-size:29px;margin-top:3px}.field.empty strong{color:#b3bbc6}
+.field{position:relative;border:2px solid #d6dce4;background:#fff;border-radius:15px;padding:10px 4px;text-align:center;min-width:0}.field.on{border-color:#111827;box-shadow:0 0 0 3px rgba(17,24,39,.08)}.field.locked{background:#f3f4f6;border-color:#667085}.field small{display:block;font-size:10px;font-weight:800;color:#667085;text-transform:uppercase}.field strong{display:block;font-size:29px;margin-top:3px}.field.empty strong{color:#b3bbc6}.field .lock{position:absolute;right:4px;top:4px;width:24px;height:24px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:#eef1f5;color:#667085;font-size:12px;line-height:1}.field.locked .lock{background:#111827;color:#fff}.freezehint{font-size:12px;color:#667085;text-align:center;margin:-2px 0 10px}
 .code{display:flex;justify-content:space-between;padding:0 4px 9px;color:#667085;font-size:13px;font-weight:800}.code strong{color:#111827;letter-spacing:.16em;font-size:18px}
 .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.pad button{min-height:68px;border:1px solid #c8d0db;background:#fff;border-radius:16px;font-size:28px;font-weight:900}.pad button:active{transform:scale(.97);background:#e8ebef}
 .utils{display:flex;gap:9px;margin-top:10px}.utils button{flex:1;min-height:48px}.confirm{width:100%;min-height:62px;font-size:19px;margin-top:10px}.confirm:disabled{opacity:.38}
@@ -55,6 +55,7 @@ input,select{width:100%;min-height:48px;border:1px solid #cfd6df;border-radius:1
 <section id="survey" class="hidden">
   <div class="header row"><div><p id="areaLabel" class="eyebrow">BULK</p><h1 id="loc">F09 · ROW 01</h1></div><button id="backSetup" class="secondary">New Section</button></div>
   <div id="fields" class="fields"></div>
+  <div class="freezehint">Tap the lock on a zone to freeze it across rows.</div>
   <div class="code"><span>Code</span><strong id="code">----</strong></div>
   <div id="pad" class="pad"></div>
   <div class="utils"><button id="erase" class="secondary">⌫ Backspace</button><button id="reset" class="secondary">Reset Defaults</button></div>
@@ -70,15 +71,15 @@ input,select{width:100%;min-height:48px;border:1px solid #cfd6df;border-radius:1
 'use strict';
 var KEY='ezsdib_v1', SETS={Bulk:['Bend','Reach','Step','Ladder'],RSP:['Bend','Reach']};
 function empty(){return{Bend:'',Reach:'',Step:'',Ladder:''}}
-function fresh(){return{config:{area:'Bulk',aisle:'',row:1,defaults:{Bulk:empty(),RSP:empty()}},records:[]}}
-function load(){try{var x=JSON.parse(localStorage.getItem(KEY));if(!x||!x.config||!Array.isArray(x.records))return fresh();x.config.area=x.config.area==='RSP'?'RSP':'Bulk';x.config.aisle=String(x.config.aisle||'').toUpperCase();x.config.row=norm(x.config.row);x.config.defaults=x.config.defaults||{};x.config.defaults.Bulk=Object.assign(empty(),x.config.defaults.Bulk||{});x.config.defaults.RSP=Object.assign(empty(),x.config.defaults.RSP||{});return x}catch(e){return fresh()}}
+function fresh(){return{config:{area:'Bulk',aisle:'',row:1,defaults:{Bulk:empty(),RSP:empty()},frozen:{Bulk:empty(),RSP:empty()}},records:[]}}
+function load(){try{var x=JSON.parse(localStorage.getItem(KEY));if(!x||!x.config||!Array.isArray(x.records))return fresh();x.config.area=x.config.area==='RSP'?'RSP':'Bulk';x.config.aisle=String(x.config.aisle||'').toUpperCase();x.config.row=norm(x.config.row);x.config.defaults=x.config.defaults||{};x.config.defaults.Bulk=Object.assign(empty(),x.config.defaults.Bulk||{});x.config.defaults.RSP=Object.assign(empty(),x.config.defaults.RSP||{});x.config.frozen=x.config.frozen||{};x.config.frozen.Bulk=Object.assign(empty(),x.config.frozen.Bulk||{});x.config.frozen.RSP=Object.assign(empty(),x.config.frozen.RSP||{});return x}catch(e){return fresh()}}
 var state=load(),draft=empty(),active=0,timer;
 function q(id){return document.getElementById(id)}function norm(v){var n=parseInt(v,10);return isFinite(n)&&n>0?n:1}function digit(v){return /^[1-9]$/.test(String(v))}
 function fields(){return SETS[state.config.area]}function key(a,i,r){return a+'|'+String(i).toUpperCase()+'|'+norm(r)}function rowText(r){return String(norm(r)).padStart(2,'0')}
 function save(){localStorage.setItem(KEY,JSON.stringify(state));counts()}
-function defaultsDraft(){var d=empty(),src=state.config.defaults[state.config.area]||empty();fields().forEach(function(f){d[f]=digit(src[f])?src[f]:''});return d}
+function defaultsDraft(){var d=empty(),src=state.config.defaults[state.config.area]||empty(),fr=state.config.frozen[state.config.area]||empty();fields().forEach(function(f){d[f]=digit(fr[f])?fr[f]:(digit(src[f])?src[f]:'')});return d}
 function current(){var k=key(state.config.area,state.config.aisle,state.config.row);return state.records.find(function(r){return key(r.area,r.aisle,r.row)===k})||null}
-function best(){var fs=fields(),i=fs.findIndex(function(f){return !digit(draft[f])});return i<0?0:i}
+function frozen(f){return digit((state.config.frozen[state.config.area]||empty())[f])}function best(){var fs=fields(),i=fs.findIndex(function(f){return !frozen(f)&&!digit(draft[f])});if(i>=0)return i;i=fs.findIndex(function(f){return !frozen(f)});return i>=0?i:0}
 function loadDraft(){var r=current();draft=r?Object.assign(empty(),r.values):defaultsDraft();active=best();renderSurvey()}
 function counts(){var s=state.records.length+' saved';q('count').textContent=s;q('setupCount').textContent=s}
 function renderSetup(){
@@ -93,10 +94,10 @@ function renderSetup(){
 function renderSurvey(){
  q('areaLabel').textContent=state.config.area.toUpperCase();q('loc').textContent=state.config.aisle+' · ROW '+rowText(state.config.row);
  var fs=fields();q('fields').className='fields '+state.config.area.toLowerCase();q('fields').innerHTML='';
- fs.forEach(function(f,i){var b=document.createElement('button');b.className='field'+(i===active?' on':'')+(digit(draft[f])?'':' empty');b.innerHTML='<small>'+f+'</small><strong>'+(draft[f]||'–')+'</strong>';b.onclick=function(){active=i;renderSurvey()};q('fields').appendChild(b)});
+ fs.forEach(function(f,i){var b=document.createElement('button'),locked=frozen(f);b.className='field'+(i===active?' on':'')+(digit(draft[f])?'':' empty')+(locked?' locked':'');b.innerHTML='<span class="lock" data-lock="1" aria-label="'+(locked?'Unfreeze ':'Freeze ')+f+'">'+(locked?'🔒':'🔓')+'</span><small>'+f+'</small><strong>'+(draft[f]||'–')+'</strong>';b.onclick=function(e){if(e.target&&e.target.dataset&&e.target.dataset.lock){e.stopPropagation();toggleFreeze(f,i);return}active=i;renderSurvey()};q('fields').appendChild(b)});
  q('code').textContent=fs.map(function(f){return draft[f]||'–'}).join('');q('confirm').disabled=!fs.every(function(f){return digit(draft[f])});recent();counts()
 }
-function enter(v){var fs=fields();draft[fs[active]]=v;if(active<fs.length-1)active++;renderSurvey()}
+function toggleFreeze(f,i){var fr=state.config.frozen[state.config.area];if(frozen(f)){fr[f]='';save();active=i;toast(f+' unfrozen')}else{if(!digit(draft[f])){active=i;renderSurvey();toast('Set '+f+' first');return}fr[f]=draft[f];save();active=best();toast(f+' frozen at '+draft[f])}renderSurvey()}function enter(v){var fs=fields(),f=fs[active];draft[f]=v;if(frozen(f))state.config.frozen[state.config.area][f]=v;save();for(var i=active+1;i<fs.length;i++){if(!frozen(fs[i])){active=i;break}}renderSurvey()}
 function erase(){var fs=fields(),f=fs[active];if(draft[f])draft[f]='';else if(active>0){active--;draft[fs[active]]=''}renderSurvey()}
 function saveNext(){var fs=fields();if(!fs.every(function(f){return digit(draft[f])}))return;var vals=empty();fs.forEach(function(f){vals[f]=draft[f]});
  var rec={area:state.config.area,aisle:state.config.aisle,row:norm(state.config.row),values:vals,updatedAt:new Date().toISOString()},k=key(rec.area,rec.aisle,rec.row),idx=state.records.findIndex(function(r){return key(r.area,r.aisle,r.row)===k});
@@ -108,7 +109,7 @@ function recent(){var list=q('recentList');list.innerHTML='';var a=state.records
  a.forEach(function(r){var fs=SETS[r.area]||SETS.Bulk,code=fs.map(function(f){return r.values&&r.values[f]||''}).join(''),b=document.createElement('button');b.className='recentitem';b.innerHTML='<strong>'+esc(r.area)+' · '+esc(r.aisle)+' · Row '+rowText(r.row)+'</strong><span>'+esc(code)+'</span>';b.onclick=function(){state.config.area=r.area;state.config.aisle=r.aisle;state.config.row=norm(r.row);save();loadDraft();window.scrollTo(0,0)};list.appendChild(b)})
 }
 function showSurvey(){var a=q('aisle').value.trim().toUpperCase();if(!a){q('aisle').focus();toast('Enter an aisle');return}state.config.aisle=a;state.config.row=norm(q('row').value);save();q('setup').classList.add('hidden');q('survey').classList.remove('hidden');loadDraft();window.scrollTo(0,0)}
-function showSetup(){q('survey').classList.add('hidden');q('setup').classList.remove('hidden');renderSetup();window.scrollTo(0,0)}
+function showSetup(){state.config.frozen={Bulk:empty(),RSP:empty()};save();q('survey').classList.add('hidden');q('setup').classList.remove('hidden');renderSetup();window.scrollTo(0,0)}
 function csvEsc(v){var s=String(v==null?'':v);return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
 function buildCsv(){var h=['Area','Aisle','Row #','Bend Tier','Reach Tier','Step Tier','Ladder Tier'],a=state.records.slice().sort(function(x,y){var z=x.area.localeCompare(y.area);if(z)return z;z=x.aisle.localeCompare(y.aisle,undefined,{numeric:true,sensitivity:'base'});return z||norm(x.row)-norm(y.row)});
  var rows=a.map(function(r){return[r.area,r.aisle,norm(r.row),r.values.Bend||'',r.values.Reach||'',r.area==='Bulk'?(r.values.Step||''):'',r.area==='Bulk'?(r.values.Ladder||''):'' ]});return[h].concat(rows).map(function(r){return r.map(csvEsc).join(',')}).join('\r\n')
@@ -124,7 +125,7 @@ q('aisle').oninput=function(){var p=this.selectionStart;this.value=this.value.to
 q('aisle').onchange=function(){state.config.aisle=this.value.trim().toUpperCase();save()};q('row').onchange=function(){state.config.row=norm(this.value);this.value=state.config.row;save()};
 q('clearDefaults').onclick=function(){state.config.defaults[state.config.area]=empty();save();renderSetup()};q('start').onclick=showSurvey;q('backSetup').onclick=showSetup;q('erase').onclick=erase;
 q('reset').onclick=function(){draft=defaultsDraft();active=best();renderSurvey()};q('confirm').onclick=saveNext;q('prev').onclick=previous;q('export').onclick=exportCsv;q('exportSetup').onclick=exportCsv;
-q('clearAll').onclick=function(){if(!state.records.length&&!state.config.aisle){toast('Already clean');return}if(confirm('Start a new file? This deletes all saved rows and resets aisle/row. Defaults are kept.')){state.records=[];state.config.aisle='';state.config.row=1;save();renderSetup();toast('New file ready')}};
+q('clearAll').onclick=function(){if(!state.records.length&&!state.config.aisle){toast('Already clean');return}if(confirm('Start a new file? This deletes all saved rows and resets aisle/row. Defaults are kept.')){state.records=[];state.config.aisle='';state.config.row=1;state.config.frozen={Bulk:empty(),RSP:empty()};save();renderSetup();toast('New file ready')}};
 for(var i=1;i<=9;i++){(function(n){var b=document.createElement('button');b.textContent=String(n);b.onclick=function(){enter(String(n))};q('pad').appendChild(b)})(i)}
 renderSetup();if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})});
 })();

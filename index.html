@@ -22,7 +22,7 @@ input,select{width:100%;min-height:48px;border:1px solid #cfd6df;border-radius:1
 .defaults{display:grid;grid-template-columns:1fr 1fr;gap:10px}.muted{font-size:13px;color:#667085;margin-top:4px}
 .primary,.secondary,.plain{border-radius:14px;font-weight:800}.primary{border:1px solid #bfd4ef;background:#edf5ff;color:#1d4f86}.secondary{background:#f7f9fc;color:#344054;border:1px solid #cfd6df}.plain{border:1px solid #d7dde5;background:#f7f9fc;color:#475467}.danger{color:#9b2c2c}
 .big{width:100%;min-height:58px;font-size:18px}.actions{display:grid;gap:10px;margin-top:12px}.actions .secondary{min-height:48px}
-.statusdock{position:sticky;top:calc(env(safe-area-inset-top) + 4px);z-index:20;background:rgba(238,241,245,.96);backdrop-filter:blur(10px);padding:4px 0 6px;margin-bottom:6px}.statusdock .fields{margin-bottom:6px}.currentwrap{margin:0 0 6px}.currentcard{width:100%;text-align:center;background:#eef8f2;border:1px solid #c9dfd0;border-radius:14px;padding:14px 18px;box-shadow:0 3px 12px rgba(17,24,39,.04)}.currenttitle{font-size:33px;font-weight:900;line-height:1.05;letter-spacing:-.025em;color:#163e2d}.lastfloat{min-height:40px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d6dce4;border-radius:12px;padding:8px 11px;font-size:13px;font-weight:800;color:#667085;box-shadow:0 2px 8px rgba(17,24,39,.04)}.workdefaults{background:#fff;border:1px solid #dce1e8;border-radius:12px;margin:8px 0 0;overflow:hidden}.workdefaults summary{cursor:pointer;list-style:none;min-height:42px;padding:11px 13px;font-weight:800}.workdefaults summary::-webkit-details-marker{display:none}.workdefaults[open] summary{border-bottom:1px solid #e3e7ed}.workdefaultsbody{padding:11px 13px 13px}
+.statusdock{position:sticky;top:calc(env(safe-area-inset-top) + 4px);z-index:6;pointer-events:none;background:rgba(238,241,245,.94);backdrop-filter:blur(10px);padding:4px 0 6px;margin-bottom:8px}.currentwrap{margin:0 0 5px}.currentcard{width:100%;text-align:center;background:#eef8f2;border:1px solid #c9dfd0;border-radius:14px;padding:14px 18px;box-shadow:0 3px 12px rgba(17,24,39,.04)}.currenttitle{font-size:33px;font-weight:900;line-height:1.05;letter-spacing:-.025em;color:#163e2d}.lastfloat{min-height:40px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d6dce4;border-radius:12px;padding:8px 11px;font-size:13px;font-weight:800;color:#667085;box-shadow:0 2px 8px rgba(17,24,39,.04)}.workdefaults{background:#fff;border:1px solid #dce1e8;border-radius:12px;margin:8px 0 0;overflow:hidden}.workdefaults summary{cursor:pointer;list-style:none;min-height:42px;padding:11px 13px;font-weight:800}.workdefaults summary::-webkit-details-marker{display:none}.workdefaults[open] summary{border-bottom:1px solid #e3e7ed}.workdefaultsbody{padding:11px 13px 13px}
 .fields{display:grid;gap:8px;margin-bottom:10px}.fields.bulk{grid-template-columns:repeat(4,1fr)}.fields.rsp{grid-template-columns:repeat(2,1fr)}
 .field{position:relative;border:2px solid #d6dce4;background:#fff;border-radius:15px;padding:11px 4px;text-align:center;min-width:0}.field.on{border-color:#111827;box-shadow:0 0 0 3px rgba(17,24,39,.08)}.field.locked{background:#f3f4f6;border-color:#667085}.field small{display:block;font-size:11px;font-weight:800;color:#667085;text-transform:uppercase}.field strong{display:block;font-size:31px;margin-top:3px}.field.empty strong{color:#b3bbc6}.field .lock{position:absolute;right:5px;top:5px;width:25px;height:25px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:#eef1f5;color:#667085;font-size:12px;line-height:1}.field.locked .lock{background:#111827;color:#fff}
 .padtop{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:2px 0 6px}.padtop .undo{grid-column:1;min-height:34px;padding:3px 8px;font-size:12px}.padtop .erase{grid-column:3;min-height:34px;padding:3px 8px;font-size:12px}.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.pad button{min-height:68px;border:1px solid #c8d0db;background:#fff;border-radius:16px;font-size:28px;font-weight:900}.pad button:active{transform:scale(.97);background:#e8ebef}
@@ -31,13 +31,12 @@ input,select{width:100%;min-height:48px;border:1px solid #cfd6df;border-radius:1
 .toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#111827;color:#fff;padding:11px 14px;border-radius:999px;font-size:14px;font-weight:800;white-space:nowrap;max-width:calc(100vw - 32px)}
 </style>
 <style>
-#confirm{background:#edf5ff;border-color:#bfd4ef;color:#1d4f86}
-#nextAisle{background:#eef8f2;border-color:#c9dfd0;color:#21613f}
-#samePrev{background:#f3efff;border-color:#d7ccf4;color:#5d4796}
+#bulkConfirm,#rspConfirm{background:#edf5ff;border-color:#bfd4ef;color:#1d4f86}
+#bulkNextAisle,#rspNextAisle{background:#eef8f2;border-color:#c9dfd0;color:#21613f}
 #pairedRows{background:#eef8f6;border-color:#c5e2dc;color:#21645c}
 #pairedRows.off{background:#fff3ea;border-color:#efcfb2;color:#96521d}
 #reset{background:#f3f6fa;border-color:#d7dde5;color:#4b5f73}
-#skipRow{background:#fff7e8;border-color:#eed8a9;color:#7b5a13}
+#bulkSkip,#rspSkip{background:#fff7e8;border-color:#eed8a9;color:#7b5a13}
 #jumpRow{background:#eef7fb;border-color:#c9e0ea;color:#2c6279}
 #undoSave,#erase{background:#fff0f0;border-color:#edc4c4;color:#963434}
 #prev{background:#f3f5f7;border-color:#d8dde3;color:#4b5563}
@@ -73,13 +72,25 @@ input,select{width:100%;min-height:48px;border:1px solid #cfd6df;border-radius:1
 </section>
 
 <section id="survey" class="hidden">
-  <div class="statusdock"><div class="currentwrap"><div class="currentcard"><div id="currentTitle" class="currenttitle">F09 ROW 01</div></div></div><div id="fields" class="fields"></div><div id="lastLine" class="lastfloat">LAST · —</div></div>
+  <div class="statusdock">
+    <div class="currentwrap"><div class="currentcard"><div id="currentTitle" class="currenttitle">F09 ROW 01</div></div></div>
+    <div id="lastLine" class="lastfloat">LAST · —</div>
+  </div>
+  <div id="fields" class="fields"></div>
   <div class="padtop"><button id="undoSave" class="secondary undo">↶ Undo Last</button><button id="erase" class="secondary erase">⌫ Backspace</button></div>
   <div id="pad" class="pad"></div>
-  <div id="mainActions" class="mainactions"><button id="confirm" class="primary confirm">✓ Confirm &amp; Next Row</button><button id="nextAisle" class="secondary">Next Aisle →</button></div>
+  <div id="bulkActions" class="mainactions">
+    <button id="bulkConfirm" class="primary confirm">✓ Confirm &amp; Next Row</button>
+    <button id="bulkSkip" class="secondary">Skip / No Shelf</button>
+    <button id="bulkNextAisle" class="secondary">Next Aisle →</button>
+  </div>
+  <div id="rspActions" class="mainactions hidden">
+    <button id="rspNextAisle" class="secondary">Next Aisle →</button>
+    <button id="rspConfirm" class="primary confirm">✓ Confirm &amp; Next Row</button>
+  </div>
   <div class="settingsrow"><button id="pairedRows" class="secondary pairtoggle">Paired Rows: ON</button><button id="reset" class="secondary">Reset Defaults</button></div>
   <details class="workdefaults"><summary>Edit Defaults</summary><div class="workdefaultsbody"><div id="workDefaults" class="defaults"></div></div></details>
-  <div class="rowtools"><button id="skipRow" class="secondary">Skip / No Shelf</button><button id="jumpRow" class="secondary">Jump to Row</button></div>
+  <div class="rowtools"><button id="rspSkip" class="secondary hidden">Skip / No Shelf</button><button id="jumpRow" class="secondary">Jump to Row</button></div>
   <div class="nav"><button id="prev" class="plain">← Previous Row</button><button id="export" class="plain">Export CSV</button></div>
   <div class="recent"><div class="row"><h2>Recent</h2><span id="count" class="muted">0 saved</span></div><div id="recentList" class="recentlist"></div></div>
   <button id="backSetup" class="secondary sectionbtn">New Section</button>
@@ -108,12 +119,11 @@ function renderSetup(){
  document.querySelectorAll('.area').forEach(function(b){b.classList.toggle('on',b.dataset.area===state.config.area)});
  q('aisle').value=state.config.aisle;q('row').value=state.config.row;renderDefaults('defaults');counts()
 }
-function layoutActions(){var main=q('mainActions'),tools=q('rowtools'),confirm=q('confirm'),skip=q('skipRow'),next=q('nextAisle'),jump=q('jumpRow');if(state.config.area==='Bulk'){main.appendChild(confirm);main.appendChild(skip);main.appendChild(next);tools.appendChild(jump);tools.style.gridTemplateColumns='1fr'}else{main.appendChild(next);main.appendChild(confirm);tools.appendChild(skip);tools.appendChild(jump);tools.style.gridTemplateColumns='repeat(2,1fr)'}}
 function renderSurvey(){
- q('currentTitle').textContent=state.config.aisle+' ROW '+rowText(state.config.row);var last=lastSaved();q('lastLine').textContent=last?('LAST · '+last.aisle+' ROW '+rowText(last.row)):'LAST · —';q('pairedRows').textContent='Paired Rows: '+(state.config.pairedRows?'ON':'OFF');q('pairedRows').classList.toggle('off',!state.config.pairedRows);layoutActions();renderDefaults('workDefaults');
+ q('currentTitle').textContent=state.config.aisle+' ROW '+rowText(state.config.row);var last=lastSaved();q('lastLine').textContent=last?('LAST · '+last.aisle+' ROW '+rowText(last.row)):'LAST · —';q('pairedRows').textContent='Paired Rows: '+(state.config.pairedRows?'ON':'OFF');q('pairedRows').classList.toggle('off',!state.config.pairedRows);q('bulkActions').classList.toggle('hidden',state.config.area!=='Bulk');q('rspActions').classList.toggle('hidden',state.config.area!=='RSP');q('rspSkip').classList.toggle('hidden',state.config.area!=='RSP');renderDefaults('workDefaults');
  var fs=fields();q('fields').className='fields '+state.config.area.toLowerCase();q('fields').innerHTML='';
  fs.forEach(function(f,i){var b=document.createElement('button'),locked=frozen(f);b.className='field'+(i===active?' on':'')+(digit(draft[f])?'':' empty')+(locked?' locked':'');b.innerHTML='<span class="lock" data-lock="1" aria-label="'+(locked?'Unfreeze ':'Freeze ')+f+'">'+(locked?'🔒':'🔓')+'</span><small>'+f+'</small><strong>'+(draft[f]||'–')+'</strong>';b.onclick=function(e){if(e.target&&e.target.dataset&&e.target.dataset.lock){e.stopPropagation();toggleFreeze(f,i);return}active=i;renderSurvey()};q('fields').appendChild(b)});
- q('confirm').disabled=!fs.every(function(f){return digit(draft[f])});recent();counts()
+ var complete=fs.every(function(f){return digit(draft[f])});q('bulkConfirm').disabled=!complete;q('rspConfirm').disabled=!complete;recent();counts()
 }
 function toggleFreeze(f,i){var fr=state.config.frozen[state.config.area];if(frozen(f)){fr[f]='';save();active=i;toast(f+' unfrozen')}else{if(!digit(draft[f])){active=i;renderSurvey();toast('Set '+f+' first');return}fr[f]=draft[f];save();active=best();toast(f+' frozen at '+draft[f])}renderSurvey()}function enter(v){var fs=fields(),f=fs[active],next=-1;draft[f]=v;if(frozen(f))state.config.frozen[state.config.area][f]=v;save();for(var i=active+1;i<fs.length;i++){if(!frozen(fs[i])){next=i;break}}if(next>=0){active=next;renderSurvey();return}if(fs.every(function(x){return digit(draft[x])})){saveNext();return}renderSurvey()}
 function erase(){var fs=fields(),f=fs[active];if(draft[f])draft[f]='';else if(active>0){active--;draft[fs[active]]=''}renderSurvey()}
@@ -121,7 +131,6 @@ function saveNext(){var fs=fields();if(!fs.every(function(f){return digit(draft[
  var rec={area:state.config.area,aisle:state.config.aisle,row:norm(state.config.row),values:vals,skipped:false,updatedAt:new Date().toISOString()},k=key(rec.area,rec.aisle,rec.row),idx=state.records.findIndex(function(r){return key(r.area,r.aisle,r.row)===k}),before=idx>=0?copyRec(state.records[idx]):null;setUndo(k,before,rec);
  if(idx>=0)state.records[idx]=rec;else state.records.push(rec);state.config.row=norm(state.config.row)+rowStep();save();draft=defaultsDraft();active=best();renderSurvey();toast(idx>=0?'Row updated':'Saved')
 }
-function samePrevious(){var row=norm(state.config.row),a=state.records.filter(function(r){return !r.skipped&&r.area===state.config.area&&String(r.aisle).toUpperCase()===state.config.aisle&&norm(r.row)<row}).sort(function(x,y){return norm(y.row)-norm(x.row)});if(!a.length){toast('No previous row in this section');return}var prev=a[0],fs=fields(),fr=state.config.frozen[state.config.area]||empty();fs.forEach(function(f){draft[f]=digit(fr[f])?fr[f]:(prev.values&&digit(prev.values[f])?prev.values[f]:'')});active=best();renderSurvey();toast('Copied Row '+rowText(prev.row))}
 function skipRow(){var rec={area:state.config.area,aisle:state.config.aisle,row:norm(state.config.row),values:empty(),skipped:true,updatedAt:new Date().toISOString()},k=key(rec.area,rec.aisle,rec.row),idx=state.records.findIndex(function(r){return key(r.area,r.aisle,r.row)===k}),before=idx>=0?copyRec(state.records[idx]):null;setUndo(k,before,rec);if(idx>=0)state.records[idx]=rec;else state.records.push(rec);state.config.row=norm(state.config.row)+rowStep();save();draft=defaultsDraft();active=best();renderSurvey();toast('Row marked No Shelf')}
 function jumpRow(){var v=prompt('Jump to row:',String(state.config.row));if(v===null)return;var n=parseInt(v,10);if(!isFinite(n)||n<1){toast('Enter a valid row');return}state.config.row=n;save();loadDraft();window.scrollTo(0,0);toast('Jumped to Row '+rowText(n))}function nextAisle(){var s=String(state.config.aisle||'').toUpperCase(),m=s.match(/^(.*?)(\d+)$/);if(!m){toast('Aisle cannot be auto-incremented');return}var width=m[2].length,n=String(parseInt(m[2],10)+1).padStart(width,'0');state.config.aisle=m[1]+n;state.config.row=1;save();loadDraft();window.scrollTo(0,0);toast('Now '+state.config.aisle+' · Row 01')}
 function undoLast(){state.undoStack=state.undoStack||[];var u=state.undoStack.pop();if(!u){var r=lastSaved();if(!r){toast('Nothing to undo');return}var ri=state.records.findIndex(function(x){return key(x.area,x.aisle,x.row)===key(r.area,r.aisle,r.row)});if(ri>=0)state.records.splice(ri,1);state.config.area=r.area;state.config.aisle=r.aisle;state.config.row=norm(r.row);save();loadDraft();window.scrollTo(0,0);toast('Save undone');return}var idx=state.records.findIndex(function(r){return key(r.area,r.aisle,r.row)===u.recordKey});if(u.before){if(idx>=0)state.records[idx]=copyRec(u.before);else state.records.push(copyRec(u.before))}else if(idx>=0)state.records.splice(idx,1);state.config.area=u.area;state.config.aisle=u.aisle;state.config.row=norm(u.row);save();loadDraft();window.scrollTo(0,0);toast('Save undone')}
@@ -147,7 +156,7 @@ document.querySelectorAll('.area').forEach(function(b){b.onclick=function(){stat
 q('aisle').oninput=function(){var p=this.selectionStart;this.value=this.value.toUpperCase();try{this.setSelectionRange(p,p)}catch(e){}};
 q('aisle').onchange=function(){state.config.aisle=this.value.trim().toUpperCase();save()};q('row').onchange=function(){state.config.row=norm(this.value);this.value=state.config.row;save()};
 q('clearDefaults').onclick=function(){state.config.defaults[state.config.area]=empty();save();renderSetup()};q('start').onclick=showSurvey;q('backSetup').onclick=showSetup;q('erase').onclick=erase;
-q('reset').onclick=function(){draft=defaultsDraft();active=best();renderSurvey()};q('pairedRows').onclick=function(){state.config.pairedRows=!state.config.pairedRows;save();renderSurvey();toast('Paired Rows '+(state.config.pairedRows?'ON':'OFF'))};q('confirm').onclick=saveNext;q('skipRow').onclick=skipRow;q('jumpRow').onclick=jumpRow;q('nextAisle').onclick=nextAisle;q('undoSave').onclick=undoLast;q('prev').onclick=previous;q('export').onclick=exportCsv;q('exportSetup').onclick=exportCsv;
+q('reset').onclick=function(){draft=defaultsDraft();active=best();renderSurvey()};q('pairedRows').onclick=function(){state.config.pairedRows=!state.config.pairedRows;save();renderSurvey();toast('Paired Rows '+(state.config.pairedRows?'ON':'OFF'))};q('bulkConfirm').onclick=saveNext;q('rspConfirm').onclick=saveNext;q('bulkSkip').onclick=skipRow;q('rspSkip').onclick=skipRow;q('jumpRow').onclick=jumpRow;q('bulkNextAisle').onclick=nextAisle;q('rspNextAisle').onclick=nextAisle;q('undoSave').onclick=undoLast;q('prev').onclick=previous;q('export').onclick=exportCsv;q('exportSetup').onclick=exportCsv;
 q('clearAll').onclick=function(){if(!state.records.length&&!state.config.aisle){toast('Already clean');return}if(confirm('Start a new file? This deletes all saved rows and resets aisle/row. Defaults are kept.')){state.records=[];state.config.aisle='';state.config.row=1;state.config.frozen={Bulk:empty(),RSP:empty()};state.config.pairedRows=true;state.undoStack=[];save();renderSetup();toast('New file ready')}};
 for(var i=1;i<=9;i++){(function(n){var b=document.createElement('button');b.textContent=String(n);b.onclick=function(){enter(String(n))};q('pad').appendChild(b)})(i)}
 renderSetup();if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})});
